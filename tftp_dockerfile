@@ -1,0 +1,25 @@
+FROM ubuntu:18.04
+
+MAINTAINER Edward Jones <edward.jones1@ukaea.uk>
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -q -y update \
+ && apt-get -q -y -o "DPkg::Options::=--force-confold" -o "DPkg::Options::=--force-confdef" install apt-utils \
+ && rm /etc/dpkg/dpkg.cfg.d/excludes \
+ && apt-get -q -y -o "DPkg::Options::=--force-confold" -o "DPkg::Options::=--force-confdef" install dumb-init syslinux pxelinux tftpd-hpa bash \
+ && apt-get -q -y autoremove \
+ && apt-get -q -y clean \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir /tftpboot
+
+COPY util/tftp_entrypoint.sh /entrypoint.sh
+COPY files/tftpd-hpa /etc/default/tftpd-hpa
+COPY files/interfaces /etc/network/interfaces
+COPY files/menu.c32 /tftpboot/menu.c32
+COPY files/ldlinux.e64 /tftpboot/ldlinux.e64
+COPY files/syslinux.c32 /tftpboot/syslinux.c32
+COPY files/libutil.c32 /tftpboot/libutil.c32
+ENTRYPOINT ["tail", "-f", "/dev/null"]
+CMD ["/etc/init.d/tftpd-hpa start"]

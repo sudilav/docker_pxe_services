@@ -1,0 +1,12 @@
+UI menu.c32
+TIMEOUT 100
+prompt 0
+ONTIMEOUT default-yocto
+
+MENU TITLE PXE Menu
+
+LABEL default-yocto
+	MENU LABEL default-yocto
+	MENU DEFAULT
+	KERNEL images/yocto/bzImage
+		append initrd=images/yocto/httpinitramfs.cpio.gz root=/dev/ramnfs ip=dhcp init_fatal_sh=true ramnfs=10.197.101.2:/tftpboot/images/yocto/root debug=y vga=788 acpi_irq_nobalance idle=poll isolcpus=2-5 nohz_full=2-5 noirqbalance pci=nobios,assign-busses,noearly pcie_aspm=off pnpbios=off rcu_nocbs=2-5 rcu_nocb_poll thermal.off=1 tcs=reliable,noirqtime

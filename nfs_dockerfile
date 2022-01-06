@@ -1,0 +1,31 @@
+FROM ubuntu:18.04
+
+MAINTAINER Edward Jones <edward.jones1@ukaea.uk>
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -q -y update \
+ && apt-get -q -y -o "DPkg::Options::=--force-confold" -o "DPkg::Options::=--force-confdef" install apt-utils \
+ && rm /etc/dpkg/dpkg.cfg.d/excludes \
+ && apt-get -q -y -o "DPkg::Options::=--force-confold" -o "DPkg::Options::=--force-confdef" install dumb-init nfs-kernel-server bash \
+ && apt-get -q -y autoremove \
+ && apt-get -q -y clean \
+ && rm -rf /var/lib/apt/lists/*
+
+ENV DHCPD_PROTOCOL=4
+
+RUN rm -v /etc/idmapd.conf /etc/exports
+
+RUN mkdir -p /var/lib/nfs/rpc_pipefs                                                     && \
+    mkdir -p /var/lib/nfs/v4recovery                                                     && \
+    echo "rpc_pipefs  /var/lib/nfs/rpc_pipefs  rpc_pipefs  defaults  0  0" >> /etc/fstab && \
+    echo "nfsd        /proc/fs/nfsd            nfsd        defaults  0  0" >> /etc/fstab
+
+EXPOSE 2049
+ 
+COPY util/entrypoint.sh /entrypoint.sh
+COPY files/tftpd-hpa /etc/default/tftpd-hpa
+COPY files/exports /etc/exports
+COPY files/interfaces /etc/network/interfaces
+COPY files/dhcpd.conf /etc/dhcp/dhcpd.conf
+ENTRYPOINT ["/bin/bash"]
