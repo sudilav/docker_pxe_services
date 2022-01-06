@@ -12,7 +12,7 @@ RUN apt-get -q -y update \
  && apt-get -q -y clean \
  && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /tftpboot
+RUN mkdir -p /tftpboot/pxelinux.0
 
 COPY util/tftp_entrypoint.sh /entrypoint.sh
 COPY files/tftpd-hpa /etc/default/tftpd-hpa
@@ -21,5 +21,4 @@ COPY files/menu.c32 /tftpboot/menu.c32
 COPY files/ldlinux.e64 /tftpboot/ldlinux.e64
 COPY files/syslinux.c32 /tftpboot/syslinux.c32
 COPY files/libutil.c32 /tftpboot/libutil.c32
-ENTRYPOINT ["tail", "-f", "/dev/null"]
-CMD ["/etc/init.d/tftpd-hpa start"]
+ENTRYPOINT ["in.tftpd"]

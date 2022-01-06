@@ -12,8 +12,6 @@ RUN apt-get -q -y update \
  && apt-get -q -y clean \
  && rm -rf /var/lib/apt/lists/*
 
-ENV DHCPD_PROTOCOL=4
-
 RUN rm -v /etc/idmapd.conf /etc/exports
 
 RUN mkdir -p /var/lib/nfs/rpc_pipefs                                                     && \
@@ -28,4 +26,4 @@ COPY files/tftpd-hpa /etc/default/tftpd-hpa
 COPY files/exports /etc/exports
 COPY files/interfaces /etc/network/interfaces
 COPY files/dhcpd.conf /etc/dhcp/dhcpd.conf
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/entrypoint.sh"]
